@@ -28,9 +28,9 @@ jobs:
       # Build the Docker image
       - name: Build Docker Image
         run: |
-          docker build -t QCentroid/qcentroid-base-image-r-base:latest .
+          docker build -t ghcr.io/QCentroid/qcentroid-base-image-r-base:latest .
 
       # Push the image to the container registry
       - name: Push Docker Image
         run: |
-          docker push QCentroid/qcentroid-base-image-r-base:latest
+          docker push ghcr.io/QCentroid/qcentroid-base-image-r-base:latest

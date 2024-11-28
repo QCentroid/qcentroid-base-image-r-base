@@ -1,6 +1,8 @@
 # qcentroid-base-image-r-base
 
-This image is the base image for R language
+[![Docker Repository on Quay](https://quay.io/repository/qcentroid/qcentroid-base-image-r-base/status "Docker Repository on Quay")](https://quay.io/repository/qcentroid/qcentroid-base-image-r-base)
+
+This image is the QCentroid Base Image for R language
 
 ## Run
 

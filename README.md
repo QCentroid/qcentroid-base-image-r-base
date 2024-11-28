@@ -1,5 +1,7 @@
 # qcentroid-base-image-r-base
 
+This image is the base image for R language
+
 ## Run
 
 ```bash

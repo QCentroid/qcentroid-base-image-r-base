@@ -6,4 +6,6 @@ RUN apt-get clean -qq && \
     apt-get install -y -qq libc-bin libcurl4-openssl-dev libgomp1 r-base r-base-dev && \
     apt-get clean -qq && \
     rm -rf /var/lib/apt/lists/*
+RUN pip install --no-cache-dir -q --upgrade pip
+RUN pip install --no-cache-dir -q rpy2
 WORKDIR /problem

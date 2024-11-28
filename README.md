@@ -5,5 +5,5 @@ This image is the base image for R language
 ## Run
 
 ```bash
-docker run -it ghcr.io/qcentroid/qcentroid-base-image-r-base:latest
+docker run -it quay.io/qcentroid/qcentroid-base-image-r-base:latest
 ```

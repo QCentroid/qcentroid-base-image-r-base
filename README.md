@@ -3,5 +3,5 @@
 ## Run
 
 ```bash
-docker run -it
+docker run -it ghcr.io/qcentroid/qcentroid-base-image-r-base:latest
 ```

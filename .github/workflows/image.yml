@@ -2,20 +2,39 @@ name: Build and Publish Docker Image
 
 on:
   push:
-    branches:
-      - main  # Trigger on push to the main branch
-  pull_request:
-    branches:
-      - main
+
 
 jobs:
   build-and-publish:
+    permissions: write-all
     runs-on: ubuntu-latest
 
     steps:
       # Checkout the repository
       - name: Checkout repository
         uses: actions/checkout@v3
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+        
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+        
+      - name: Get short SHA
+        id: short-sha
+        run: echo "::set-output name=sha::$(echo ${GITHUB_SHA::8})"
+
+      - name: Get the version
+        id: get_version
+        run: echo "::set-output name=VERSION::${GITHUB_REF#refs/tags/}"
+
+      - name: Cache Docker layers
+        uses: actions/cache@v4
+        with:
+          path: /tmp/.buildx-cache
+          key: ${{ runner.os }}-buildx-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-buildx-
 
       # Log in to the container registry (Docker Hub, GHCR, etc.)
       - name: Log in to Docker Hub
@@ -25,12 +44,17 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      # Build the Docker image
-      - name: Build Docker Image
-        run: |
-          docker build -t ghcr.io/qcentroid/qcentroid-base-image-r-base:latest .
-
-      # Push the image to the container registry
-      - name: Push Docker Image
-        run: |
-          docker push ghcr.io/qcentroid/qcentroid-base-image-r-base:latest
+      - uses: docker/build-push-action@v4
+        name: Build container and push
+        with:
+          context: /
+          file: ./Dockerfile
+          platforms: linux/amd64 #,linux/arm64
+          push: true
+          tags: |
+            ghcr.io/qcentroid/qcentroid-base-image-r-base:${{ steps.short-sha.outputs.sha }}
+            ghcr.io/qcentroid/qcentroid-base-image-r-base:${{ github.ref == 'refs/heads/master' && 'latest' || steps.short-sha.outputs.sha }}
+            ghcr.io/qcentroid/qcentroid-base-image-r-base:${{ startsWith(github.ref, 'refs/tags/') && steps.get_version.outputs.VERSION || steps.short-sha.outputs.sha }}
+          cache-from: type=local,src=/tmp/.buildx-cache
+          cache-to: type=local,dest=/tmp/.buildx-cache
+          outputs: type=oci,dest=/tmp/image.tar
